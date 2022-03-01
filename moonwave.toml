@@ -1,0 +1,12 @@
+title = "Player Data Manager"
+changelog = true
+
+[docusaurus]
+tagline = "Easy player data management for Roblox"
+
+[home]
+enabled = true
+includeReadme = true
+
+[footer]
+style = "dark"
