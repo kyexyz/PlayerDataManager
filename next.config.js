@@ -11,6 +11,12 @@ const nextConfig = {
 				destination: 'https://www.roblox.com/games/7107498084',
 				permanent: false,
 			},
+			{
+				source: '/',
+				destination:
+					'https://www.roblox.com/groups/9634774/Lajebo-Games#!/about',
+				permanent: false,
+			},
 		]
 	},
 }
