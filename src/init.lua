@@ -39,7 +39,6 @@ local PlayerDataManager = {
 local Packages = ReplicatedStorage:WaitForChild("Packages")
 local ProfileService = require(Packages:WaitForChild("ProfileService"))
 local Janitor = require(Packages:WaitForChild("Janitor"))
-local Configuration = require(script.Configuration)
 local DataTypes = require(script.DataTypes)
 local GlobalLeaderboard = require(script.GlobalLeaderboard)
 local TypeCheck = require(script.TypeCheck)
@@ -53,48 +52,38 @@ type LeaderstatData = {
    Parser: (any) -> (any)?,
 }
 
+type Configuration = {
+   SAVE_IN_STUDIO: boolean,
+   DATA_VERSION: string,
+   TESTING_PLACE_ID: string,
+   TESTING_DATA_VERSION: string,
 
--- Initialize
-do
-   if script:FindFirstChild("Loaded") then return end 
-
-   -- Type Check Default Data
-   TypeCheck:Data(Configuration.DEFAULT_DATA)
-
-   Players.PlayerRemoving:Connect(function(player: Player)
-      local playerData = PlayerDataManager:GetPlayerData(player.UserId)
-      pcall(function()
-         if playerData then
-            playerData._profile:Release()
-         end
-         PlayerDataManager._generated_user_ids[player] = nil
-      end)
-   end)
-
-   local loadedIns = Instance.new("BoolValue")
-   loadedIns.Name = "Loaded"
-   loadedIns.Value = true
-   loadedIns.Parent = script
-end
+   DEFAULT_DATA: {
+      [string]: {
+         value: any,
+         type: string,
+         optional: boolean?,
+      } | any,
+   },
+}  
 
 
 local function fetchProfileStore()
-   local version = game.PlaceId == Configuration.TESTING_PLACE_ID and Configuration.TESTING_DATA_VERSION or Configuration.DATA_VERSION
+   local version = game.PlaceId ==  _G.PLAYERDATAMANAGER_CONFIGURATION.TESTING_PLACE_ID and  _G.PLAYERDATAMANAGER_CONFIGURATION.TESTING_DATA_VERSION or  _G.PLAYERDATAMANAGER_CONFIGURATION.DATA_VERSION
 
    PlayerDataManager._profile_store = ProfileService.GetProfileStore("PlayerData-" .. version, PlayerDataManager:_getDefaultData())
 
-   if not Configuration.SAVE_IN_STUDIO and RunService:IsStudio() then
+   if not  _G.PLAYERDATAMANAGER_CONFIGURATION.SAVE_IN_STUDIO and RunService:IsStudio() then
       PlayerDataManager._profile_store = PlayerDataManager._profile_store.Mock
    end
 end
 
-
 function PlayerDataManager:_getDefaultData(raw: boolean?)
    if raw then
-      return Configuration.DEFAULT_DATA
+      return  _G.PLAYERDATAMANAGER_CONFIGURATION.DEFAULT_DATA
    else
       local data = {}
-      for key, value in next, Configuration.DEFAULT_DATA do
+      for key, value in next,  _G.PLAYERDATAMANAGER_CONFIGURATION.DEFAULT_DATA do
          if typeof(value) == 'table' and value.value then 
             value = value
          end
@@ -131,7 +120,30 @@ function PlayerDataManager:_getRandomUserIdForPlayer(player: Player)
    return userId
 end
 
+function PlayerDataManager:Init(configuration: Configuration)
+   if _G.PLAYERDATAMANAGER_INITIALIZED then return end
+   if not configuration then return error('No configuration provided for PlayerDataManager:Init') end 
+   _G.PLAYERDATAMANAGER_INITIALIZED = true
+   
+   _G.PLAYERDATAMANAGER_CONFIGURATION = configuration
+
+   -- Type Check Default Data
+   TypeCheck:Data(_G.PLAYERDATAMANAGER_CONFIGURATION)
+
+   Players.PlayerRemoving:Connect(function(player: Player)
+      local playerData = PlayerDataManager:GetPlayerData(player.UserId)
+      pcall(function()
+         if playerData then
+            playerData._profile:Release()
+         end
+         PlayerDataManager._generated_user_ids[player] = nil
+      end)
+   end)
+end
+
 function PlayerDataManager:GetPlayerData(userId: number | string)
+   if not _G.PLAYERDATAMANAGER_INITIALIZED then return end 
+
    if tonumber(userId) <= 0 then
       local plr = Players:GetPlayerByUserId(userId)
       if plr then
@@ -183,6 +195,8 @@ function PlayerDataManager:GetPlayerData(userId: number | string)
 end
 
 function PlayerDataManager:ViewPlayerData(userId: number | string, version: string?)
+   if not _G.PLAYERDATAMANAGER_INITIALIZED then return end 
+
    userId = tostring(userId)
 
    if not self._profile_store then
@@ -229,7 +243,7 @@ function PlayerDataManager:ViewPlayerData(userId: number | string, version: stri
 end
 
 function PlayerDataManager:DeletePlayerData(userId: number | string): boolean
-   if not RunService:IsStudio() then return false end 
+   if not _G.PLAYERDATAMANAGER_INITIALIZED then return false end 
 
    userId = tostring(userId)
 
@@ -241,6 +255,8 @@ function PlayerDataManager:DeletePlayerData(userId: number | string): boolean
 end
 
 function PlayerDataManager:CreateLeaderstats(player: Player, leaderstatsData: {LeaderstatData})
+   if not _G.PLAYERDATAMANAGER_INITIALIZED then return end 
+
    if player:FindFirstChild("leaderstats") then return end
    
    local janitor = Janitor.new()
@@ -288,11 +304,13 @@ function PlayerDataManager:CreateLeaderstats(player: Player, leaderstatsData: {L
 end
 
 function PlayerDataManager:GetGlobalLeaderboard(dataKey: string)
+   if not _G.PLAYERDATAMANAGER_INITIALIZED then return end 
+
    if self._global_leaderboards[dataKey] then
       return self._global_leaderboards[dataKey]
    end
 
-   local version = game.PlaceId == Configuration.TESTING_PLACE_ID and Configuration.TESTING_DATA_VERSION or Configuration.DATA_VERSION
+   local version = game.PlaceId ==  _G.PLAYERDATAMANAGER_CONFIGURATION.TESTING_PLACE_ID and  _G.PLAYERDATAMANAGER_CONFIGURATION.TESTING_DATA_VERSION or  _G.PLAYERDATAMANAGER_CONFIGURATION.DATA_VERSION
 
    local key = "PDM-" .. dataKey .. "@" .. version
 
