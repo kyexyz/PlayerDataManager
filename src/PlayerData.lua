@@ -112,9 +112,6 @@ function PlayerData:SetValue(key: string, value: any): any
 	local oldValue = self._profile.Data[key]
 	local rawValue = value
 
-	-- Serialize
-	value, rawValue = serialize(value)
-
 	-- Middleware
 	if self.Middleware[key] then
 		value = self.Middleware[key]("UPDATE", value, oldValue)
@@ -122,6 +119,9 @@ function PlayerData:SetValue(key: string, value: any): any
 
 	-- Type Check
 	TypeCheck:Value(key, value)
+
+	-- Serialize
+	value, rawValue = serialize(value)
 
 	-- Update Profile
 	self._profile.Data[key] = value

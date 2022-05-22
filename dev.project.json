@@ -16,15 +16,17 @@
 			"$className": "ServerScriptService",
 			"$ignoreUnknownInstances": true,
 
-			"$path": "ServerPackages",
-
 			"PlayerDataManager": {
-				"$ignoreUnknownInstances": true,
-				"$path": "src"
-			},
-			"Test": {
-				"$ignoreUnknownInstances": true,
-				"$path": "Test.server.lua"
+				"$path": "ServerPackages",
+
+				"PlayerDataManager": {
+					"$ignoreUnknownInstances": true,
+					"$path": "src"
+				},
+				"Test": {
+					"$ignoreUnknownInstances": true,
+					"$path": "Test.server.lua"
+				}
 			}
 		}
 	}

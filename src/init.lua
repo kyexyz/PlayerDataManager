@@ -87,7 +87,7 @@ function PlayerDataManager:_getDefaultData(raw: boolean?)
 		local data = {}
 		for key, value in next, _G.PLAYERDATAMANAGER_CONFIGURATION.DEFAULT_DATA do
 			if typeof(value) == "table" and value.value then
-				value = value
+				value = value.value
 			end
 
 			if DataTypes[typeof(value)] then
@@ -96,6 +96,7 @@ function PlayerDataManager:_getDefaultData(raw: boolean?)
 				data[key] = value
 			end
 		end
+
 		return data
 	end
 end

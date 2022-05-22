@@ -7,12 +7,12 @@ if Packages.Name ~= "Packages" then
 end
 
 return function(packageName: string)
-	local package = (Packages:FindFirstChild(packageName))
+	local package = Packages:FindFirstChild(packageName)
 
 	if package then
-		return package
+		return require(package)
 	else
 		package = script.Parent.Parent:FindFirstChild(packageName)
-		return package
+		return require(package)
 	end
 end
