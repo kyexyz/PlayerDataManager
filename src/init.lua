@@ -24,6 +24,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local DataStoreService = game:GetService("DataStoreService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PlayerDataManager = {
    _profile_store = nil,
@@ -35,12 +36,13 @@ local PlayerDataManager = {
    _generated_user_ids = {},
 }
 
-local Resources = require(script.Resources)
-local ProfileService = Resources.ProfileService
-local Janitor = Resources.Janitor
+local Packages = ReplicatedStorage:WaitForChild("Packages")
+local ProfileService = require(Packages:WaitForChild("ProfileService"))
+local Janitor = require(Packages:WaitForChild("Janitor"))
 local Configuration = require(script.Configuration)
 local DataTypes = require(script.DataTypes)
 local GlobalLeaderboard = require(script.GlobalLeaderboard)
+local TypeCheck = require(script.TypeCheck)
 local PlayerData
 
 
@@ -54,7 +56,10 @@ type LeaderstatData = {
 
 -- Initialize
 do
-   if script:FindFirstChild("Loaded") and script.Loaded.Value == true then return end 
+   if script:FindFirstChild("Loaded") then return end 
+
+   -- Type Check Default Data
+   TypeCheck:Data(Configuration.DEFAULT_DATA)
 
    Players.PlayerRemoving:Connect(function(player: Player)
       local playerData = PlayerDataManager:GetPlayerData(player.UserId)
@@ -83,12 +88,17 @@ local function fetchProfileStore()
    end
 end
 
+
 function PlayerDataManager:_getDefaultData(raw: boolean?)
    if raw then
       return Configuration.DEFAULT_DATA
    else
       local data = {}
       for key, value in next, Configuration.DEFAULT_DATA do
+         if typeof(value) == 'table' and value.value then 
+            value = value
+         end
+         
          if DataTypes[typeof(value)] then
             data[key] = DataTypes[typeof(value)].serialize(value)
          else
@@ -105,7 +115,7 @@ function PlayerDataManager:_getRandomUserIdForPlayer(player: Player)
    local userId = math.random(1, 999999999)
    
    local function alreadyExists()
-      for plr, id in next, self._generated_user_ids do 
+      for _, id in next, self._generated_user_ids do 
          if userId == id then
             return true
          end
@@ -149,7 +159,7 @@ function PlayerDataManager:GetPlayerData(userId: number | string)
    self._loading[userId] = true
 
    local profile = self._profile_store:LoadProfileAsync(userId, "ForceLoad")
-   local player = Players:GetPlayerByUserId(userId) 
+   -- local player = Players:GetPlayerByUserId(userId) 
    if profile then
       profile:AddUserId(tonumber(userId))
       profile:Reconcile()
@@ -184,7 +194,9 @@ function PlayerDataManager:ViewPlayerData(userId: number | string, version: stri
    end
 
    if self._view_only_loading[userId] then
-      repeat task.wait() until not self._view_only_loading[userId]
+      repeat task.wait() 
+      until 
+      not self._view_only_loading[userId]
       return self._view_only_loaded[userId]
    end
 
@@ -217,7 +229,7 @@ function PlayerDataManager:ViewPlayerData(userId: number | string, version: stri
 end
 
 function PlayerDataManager:DeletePlayerData(userId: number | string): boolean
-   if not RunService:IsStudio() then return end 
+   if not RunService:IsStudio() then return false end 
 
    userId = tostring(userId)
 
@@ -250,7 +262,7 @@ function PlayerDataManager:CreateLeaderstats(player: Player, leaderstatsData: {L
          return v
       end
 
-      local ins = Instance.new(valueType or "StringValue")
+      local ins: StringValue = Instance.new(valueType or "StringValue")
       ins.Name = leaderstatsName
       ins.Value = valueParsers[key](playerData:GetValue(key))
       ins.Parent = leaderstats 

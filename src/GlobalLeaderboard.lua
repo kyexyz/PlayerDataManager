@@ -1,12 +1,13 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local GlobalLeaderboard = {}
 GlobalLeaderboard.__index = GlobalLeaderboard
 
 
-local Resources = require(script.Parent.Resources)
-local Signal = Resources.Signal
-local Janitor = Resources.Janitor
+local Packages = ReplicatedStorage:WaitForChild("Packages")
+local Signal = require(Packages:WaitForChild("Signal"))
+local Janitor = require(Packages:WaitForChild("Janitor"))
 
 
 function GlobalLeaderboard.new(dataKey: string, orderedDataStore: OrderedDataStore, loadedPlayerData)
@@ -79,8 +80,8 @@ function GlobalLeaderboard:GetData(ascending: boolean, size: number)
       end  
    end)
 
-   local data: DataStorePages = self._dataStore:GetSortedAsync(ascending, size)
-   data = data:GetCurrentPage()
+   local dataStorePages: DataStorePages = self._dataStore:GetSortedAsync(ascending, size)
+   local data = dataStorePages:GetCurrentPage()
 
    return data
 end

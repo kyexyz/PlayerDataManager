@@ -1,0 +1,14 @@
+[package]
+name = "kyexyz/player-data-manager"
+description = "Easy player data management for Roblox"
+version = "1.0.11"
+license = "MIT"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "server"
+exclude = ['build', 'docs', 'moonwave.toml', 'roblox.toml', 'selene.toml']
+
+[dependencies]
+ProfileService = "ruizukun-dev/profileservice@1.0.5"
+Janitor = "howmanysmall/janitor@1.13.15"
+Signal = "sleitnick/signal@1.1.0"
+TableUtil = "sleitnick/table-util@1.1.1"

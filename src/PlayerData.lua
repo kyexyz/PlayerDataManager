@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --[=[
    @class PlayerData
@@ -9,11 +10,12 @@ local PlayerData = {}
 PlayerData.__index = PlayerData
 
 
-local Resources = require(script.Parent.Resources)
-local Janitor = Resources.Janitor
-local Signal = Resources.Signal
-local TableUtil = Resources.TableUtil
+local Packages = ReplicatedStorage:WaitForChild("Packages")
+local Janitor = require(Packages:WaitForChild("Janitor"))
+local TableUtil = require(Packages:WaitForChild("TableUtil"))
+local Signal = require(Packages:WaitForChild("Signal"))
 local DataTypes = require(script.Parent.DataTypes)
+local TypeCheck = require(script.Parent.TypeCheck)
 local PlayerDataManager
 
 
@@ -59,7 +61,7 @@ function PlayerData.new(profile)
    self._janitor = Janitor.new()
    self._profile = profile
    self._key = tostring(self._profile.UserIds[1])
-   self._player = Players:GetPlayerByUserId(self._key)
+   self._player = Players:GetPlayerByUserId(tonumber(self._key))
 
    self.Changed = Signal.new()
    self.Middleware = {}
@@ -118,6 +120,9 @@ function PlayerData:SetValue(key: string, value: any): any
       value = self.Middleware[key]("UPDATE", value, oldValue)
    end
 
+   -- Type Check
+   TypeCheck:Value(key, value)
+
    -- Update Profile
    self._profile.Data[key] = value
 
@@ -169,14 +174,14 @@ function PlayerData:LinkToValueBase(key: string, valueBase: ValueBase)
    
    return self.Changed:Connect(function(changedKey, newValue)
       if changedKey == key then
-         valueBase.Value = newValue
+         (valueBase :: StringValue).Value = newValue
       end
    end)
 end
 
 function PlayerData:Delete(): boolean
    if not PlayerDataManager then
-      PlayerDataManager = require(script.Parent.PlayerDataManager)
+      PlayerDataManager = require(script.Parent)
    end
 
    return PlayerDataManager:DeletePlayerData(self._key)

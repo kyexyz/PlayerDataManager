@@ -3,6 +3,9 @@ changelog = true
 
 [docusaurus]
 tagline = "Easy player data management for Roblox"
+onBrokenLinks = "ignore"
+# url = "https://kyexyz.github.io"
+baseUrl = '/'
 
 [home]
 enabled = true
