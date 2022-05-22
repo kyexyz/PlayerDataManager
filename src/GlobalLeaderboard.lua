@@ -3,9 +3,9 @@ local Players = game:GetService("Players")
 local GlobalLeaderboard = {}
 GlobalLeaderboard.__index = GlobalLeaderboard
 
-local Packages = require(script.Parent.GetPackages)()
-local Signal = require(Packages:WaitForChild("Signal"))
-local Janitor = require(Packages:WaitForChild("Janitor"))
+local GetPackage = require(script.Parent.GetPackage)
+local Signal = GetPackage("Signal")
+local Janitor = GetPackage("Janitor")
 
 function GlobalLeaderboard.new(dataKey: string, orderedDataStore: OrderedDataStore, loadedPlayerData)
 	local self = setmetatable({}, GlobalLeaderboard)

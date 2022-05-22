@@ -3,19 +3,19 @@
 registry = "test"
 
 [[package]]
+name = "alreadypro/profileservice"
+version = "1.0.4"
+dependencies = []
+
+[[package]]
 name = "howmanysmall/janitor"
 version = "1.14.1"
 dependencies = []
 
 [[package]]
 name = "kyexyz/player-data-manager"
-version = "1.0.13"
+version = "1.0.14"
 dependencies = [["Janitor", "howmanysmall/janitor@1.14.1"], ["Signal", "sleitnick/signal@1.2.0"], ["TableUtil", "sleitnick/table-util@1.1.4"]]
-
-[[package]]
-name = "ruizukun-dev/profileservice"
-version = "1.0.5"
-dependencies = []
 
 [[package]]
 name = "sleitnick/signal"

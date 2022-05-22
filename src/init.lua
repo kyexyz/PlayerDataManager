@@ -35,9 +35,9 @@ local PlayerDataManager = {
 	_generated_user_ids = {},
 }
 
-local Packages = require(script.GetPackages)()
-local ProfileService = require(Packages:WaitForChild("ProfileService"))
-local Janitor = require(Packages:WaitForChild("Janitor"))
+local GetPackage = require(script.GetPackage)
+local ProfileService = GetPackage("ProfileService")
+local Janitor = GetPackage("Janitor")
 local DataTypes = require(script.DataTypes)
 local GlobalLeaderboard = require(script.GlobalLeaderboard)
 local TypeCheck = require(script.TypeCheck)

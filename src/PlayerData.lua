@@ -8,10 +8,10 @@ local Players = game:GetService("Players")
 local PlayerData = {}
 PlayerData.__index = PlayerData
 
-local Packages = require(script.Parent.GetPackages)()
-local Janitor = require(Packages:WaitForChild("Janitor"))
-local TableUtil = require(Packages:WaitForChild("TableUtil"))
-local Signal = require(Packages:WaitForChild("Signal"))
+local GetPackage = require(script.Parent.GetPackage)
+local Janitor = GetPackage("Janitor")
+local TableUtil = GetPackage("TableUtil")
+local Signal = GetPackage("Signal")
 local DataTypes = require(script.Parent.DataTypes)
 local TypeCheck = require(script.Parent.TypeCheck)
 local PlayerDataManager
