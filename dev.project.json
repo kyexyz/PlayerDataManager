@@ -3,9 +3,20 @@
 	"tree": {
 		"$className": "DataModel",
 
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"$ignoreUnknownInstances": true,
+			"Packages": {
+				"$ignoreUnknownInstances": true,
+				"$path": "Packages"
+			}
+		},
+
 		"ServerScriptService": {
 			"$className": "ServerScriptService",
 			"$ignoreUnknownInstances": true,
+
+			"$path": "ServerPackages",
 
 			"PlayerDataManager": {
 				"$ignoreUnknownInstances": true,

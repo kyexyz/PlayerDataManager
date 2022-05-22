@@ -1,3 +1,5 @@
 .vscode/
 build/
 Test.server.lua
+Packages/
+ServerPackages/
